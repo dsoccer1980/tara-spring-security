@@ -16,9 +16,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @ComponentScan(basePackages = "ee.aktors.tara")
 @PropertySources({
     @PropertySource("classpath:tara.properties"),
-    @PropertySource(value = "${tara.properties.location}", ignoreResourceNotFound = true),
-    @PropertySource("classpath:jdbc.properties"),
-    @PropertySource(value = "${jdbc.properties.location}", ignoreResourceNotFound = true)})
+    @PropertySource(value = "${tara.properties.location}", ignoreResourceNotFound = true)})
 public class WebConfig implements WebMvcConfigurer {
 
   @Bean
