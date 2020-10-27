@@ -34,7 +34,7 @@ public class MainController {
     IdToken idToken = ((IdToken) authentication.getPrincipal());
 
     model.addAttribute("personalId", idToken.getSub());
-    return "authenticated";
+    return "user";
   }
 
 

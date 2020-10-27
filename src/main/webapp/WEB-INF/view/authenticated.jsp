@@ -15,5 +15,10 @@
 <p>Authentication Method: <c:out value="${authMethod}"/></p>
 <hr>
 <a href='${pageContext.request.contextPath}/'>Back to login page</a>
+
+
+<form action="${pageContext.request.contextPath}/logout" method="post">
+    <input type="submit" value="Logout">
+</form>
 </body>
 </html>
