@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -16,10 +17,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final CallbackService callbackService;
+  private final UserDetailsService userDetailsService;
 
   @Autowired
-  public SecurityConfig(CallbackService callbackService) {
+  public SecurityConfig(CallbackService callbackService, UserDetailsService userDetailsService) {
     this.callbackService = callbackService;
+    this.userDetailsService = userDetailsService;
   }
 
   @Override
@@ -32,6 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers("/authenticate").permitAll()
         .antMatchers("/login/oidc").permitAll()
         .antMatchers("/user").hasRole("USER")
+        .antMatchers("/guest").hasRole("GUEST")
         .anyRequest().authenticated()
         .and()
         .formLogin().loginPage("/authenticate")
@@ -46,6 +50,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Bean
   public JwtTokenFilter jwtTokenFilter() {
-    return new JwtTokenFilter(callbackService);
+    return new JwtTokenFilter(callbackService, userDetailsService);
   }
 }

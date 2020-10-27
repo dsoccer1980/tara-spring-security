@@ -1,6 +1,6 @@
 package ee.aktors.tara.controller;
 
-import ee.aktors.tara.domain.IdToken;
+import ee.aktors.tara.security.SecurityUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -18,23 +18,31 @@ public class MainController {
   @GetMapping("/authenticated")
   public String authenticatedWelcome(Model model) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    IdToken idToken = ((IdToken) authentication.getPrincipal());
+    SecurityUser securityUser = ((SecurityUser) authentication.getPrincipal());
 
-    model.addAttribute("personalId", idToken.getSub());
-    model.addAttribute("firstName", idToken.getProfileAttributes().getGivenName());
-    model.addAttribute("lastName", idToken.getProfileAttributes().getFamilyName());
-    model.addAttribute("dateOfBirth", idToken.getProfileAttributes().getDateOfBirth());
-    model.addAttribute("authMethod", idToken.getAmr());
+    model.addAttribute("personalId", securityUser.getUsername());
+//    model.addAttribute("personalId", idToken.getSub());
+//    model.addAttribute("firstName", idToken.getProfileAttributes().getGivenName());
+//    model.addAttribute("lastName", idToken.getProfileAttributes().getFamilyName());
+//    model.addAttribute("dateOfBirth", idToken.getProfileAttributes().getDateOfBirth());
+//    model.addAttribute("authMethod", idToken.getAmr());
     return "authenticated";
   }
 
   @GetMapping("/user")
   public String user(Model model) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    IdToken idToken = ((IdToken) authentication.getPrincipal());
-
-    model.addAttribute("personalId", idToken.getSub());
+    SecurityUser securityUser = ((SecurityUser) authentication.getPrincipal());
+    model.addAttribute("personalId", securityUser.getUsername());
     return "user";
+  }
+
+  @GetMapping("/guest")
+  public String authenticatedGuest(Model model) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    SecurityUser securityUser = ((SecurityUser) authentication.getPrincipal());
+    model.addAttribute("personalId", securityUser.getUsername());
+    return "guest";
   }
 
 

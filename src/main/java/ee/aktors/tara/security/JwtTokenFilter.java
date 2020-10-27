@@ -4,7 +4,6 @@ import ee.aktors.tara.domain.IdToken;
 import ee.aktors.tara.exception.AuthenticationException;
 import ee.aktors.tara.service.CallbackService;
 import java.io.IOException;
-import java.util.Collections;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -13,8 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -22,9 +22,11 @@ import org.springframework.web.filter.GenericFilterBean;
 public class JwtTokenFilter extends GenericFilterBean {
 
   private final CallbackService callbackService;
+  private final UserDetailsService userDetailsService;
 
-  public JwtTokenFilter(CallbackService callbackService) {
+  public JwtTokenFilter(CallbackService callbackService, UserDetailsService userDetailsService) {
     this.callbackService = callbackService;
+    this.userDetailsService = userDetailsService;
   }
 
   @Override
@@ -33,8 +35,8 @@ public class JwtTokenFilter extends GenericFilterBean {
     if (code != null) {
       try {
         IdToken idToken = callbackService.getIdToken(code);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(idToken, "",
-            Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(idToken.getSub());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
       } catch (AuthenticationException e) {
         SecurityContextHolder.clearContext();
