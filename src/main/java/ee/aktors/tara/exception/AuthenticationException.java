@@ -3,7 +3,7 @@ package ee.aktors.tara.exception;
 import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 
-public class AuthenticationException extends Exception {
+public class AuthenticationException extends RuntimeException {
 
   private static final long serialVersionUID = 9126951652489627731L;
 

@@ -1,5 +1,6 @@
 package ee.aktors.tara.controller;
 
+import ee.aktors.tara.exception.AuthenticationException;
 import ee.aktors.tara.util.TaraConfiguration;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -16,7 +17,6 @@ import org.springframework.web.servlet.view.RedirectView;
 public class AuthController {
 
   private static final Logger logger = Logger.getLogger(AuthController.class);
-
   private final String authenticationUrl;
 
   public AuthController(TaraConfiguration taraConfiguration) throws UnsupportedEncodingException {
@@ -28,10 +28,6 @@ public class AuthController {
             URLEncoder.encode(taraConfiguration.getRedirectUri(), StandardCharsets.UTF_8.name()));
   }
 
-  @GetMapping(value = "")
-  public String index() {
-    return "index";
-  }
 
   @GetMapping(value = "/authenticate")
   public View authenticate(HttpSession session) {
@@ -43,6 +39,17 @@ public class AuthController {
         false,
         true,
         false);
+  }
+
+  @GetMapping("/login/oidc")
+  public String callBackFromTara() throws AuthenticationException {
+    return "redirect:/authenticated";
+  }
+
+  @GetMapping("/session/cancel")
+  public String cancelFromTara() {
+    logger.info("Client returns from TARA without an authentication");
+    return "redirect:/";
   }
 
 }
